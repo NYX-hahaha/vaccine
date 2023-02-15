@@ -22,7 +22,7 @@ ed_levels <- c(
 
 likert_levels <- c("Strongly disagree", "Tend to disagree", "Neither agree nor disagree", "Tend to agree", "Strongly agree")
 
-d_trustvac <- read_csv(file="/Users/niyixin/Desktop/vaccine/data.csv",
+d_trustvac <- read_csv(file="/Users/niyixin/Desktop/R/vaccine/data.csv",
                        col_types = cols(
                          col_number(),
                          col_factor(),
