@@ -2,7 +2,9 @@
 title: "Analysis of vaccine data"
 author: "NYX"
 date: "2023-02-15"
-output: html_document
+output:
+  word_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -81,7 +83,6 @@ d_trustvac <- cbind(d_trustvac, trustvac_scores$scores)
 ```
 
 # Demographic characteristic
-
 ## Age
 ```{r}
 d_trustvac %>%
@@ -95,7 +96,7 @@ d_trustvac %>%
   ggplot(aes(x = age)) + geom_histogram(binwidth = 5)
 ```
 
-## gender
+## Gender
 ```{r}
 d_trustvac %>%
   count(gender_nb)
@@ -108,16 +109,15 @@ d_trustvac %>%
 ```{r}
 d_trustvac %>%
   count(hhedqual)
+
 d_trustvac %>%
   ggplot(aes(x = hhedqual)) + geom_bar() + coord_flip()
 ```
-# Descriptive statistics: Likert items
-
+# 描述性统计
 ## 单列清除NA值
 ```{r}
 d_trustvac$vacch_coded%>% median(na.rm = TRUE)
 ```
-
 ## 批量处理每列中位数(视频讲解内容)
 ```{r}
 trustvac_likert_summary <- d_trustvac %>%
@@ -136,7 +136,8 @@ d_trustvac_likert_summary
 d_trustvac_likert_summary %>%
   ggplot(aes(x = Item, y = Median)) + geom_point() + coord_flip()
 ```
-## binary变量处理（F检验&Chi检验）
+# 统计检验
+## binary变量处理
 ```{r}
 d_trustvac <- d_trustvac %>%
   mutate(
@@ -150,8 +151,10 @@ d_trustvac <- d_trustvac %>%
         'Strongly disagree' = FALSE
       )
   )
+
 d_trustvac %>%
   xtabs(~ Female + Vaccines_safe, .)
+
 d_trustvac %>%
   group_by(Female) %>%
   summarise(
@@ -161,7 +164,10 @@ d_trustvac %>%
   mutate(
     Percentage = round(Agree / n * 100)
   )
+```
 
+## 两分类变量检验
+```{r}
 chisq.test(
   d_trustvac$Female,
   d_trustvac$Vaccines_safe
@@ -172,19 +178,12 @@ fisher.test(
   d_trustvac$Vaccines_safe
 )
 
-
-```
-## Wilcox检验
-```{r}
 d_trustvac %>%
   wilcox.test(
     vacsafe_coded ~ Female,
     data = .
   )
-```
 
-## T检验（age）
-```{r}
 d_trustvac %>%
   t.test(
     age ~ Vaccines_safe,
@@ -199,16 +198,19 @@ d_trustvac %>%
   geom_histogram(
     binwidth = 0.5)
 ```
+
 ```{r}
 d_trustvac %>%
   ggplot(aes(x = gov_trust, y = vac_attitude)) +
   geom_jitter(size = 0.5)
 ```
+
 ```{r}
 d_trustvac %>%
   ggplot(aes(x = age, y = vac_attitude)) +
   geom_jitter(size = 0.5)
 ```
+## 疫苗态度和性别T检验
 ```{r}
 d_trustvac %>%
   t.test(
@@ -217,6 +219,7 @@ d_trustvac %>%
     data = .
   )
 ```
+## 相关关系r计算
 ```{r}
 d_trustvac %>%
   mutate(Female = Female %>% as.numeric) %>%
@@ -228,10 +231,10 @@ d_trustvac %>%
 d_trustvac %>%
   cor.test(~ vac_attitude + age, data = .)
 ```
+## 回归
 ```{r}
 d_trustvac %>%
   mutate(Female = Female %>% as.numeric) %>%
   lm(vac_attitude ~ age + gov_trust + Female, data = .) %>%
   summary
 ```
-
